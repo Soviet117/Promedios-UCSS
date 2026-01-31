@@ -24,8 +24,6 @@ export async function POST(request: NextRequest) {
     
     if (resultado.cursos && resultado.cursos.length > 0) {
       console.log(`📚 Total de cursos: ${resultado.cantidadCursos}`);
-      console.log(`⭐ Promedio Ponderado: ${resultado.promedioPonderado}`);
-      console.log(`📖 Total de Créditos: ${resultado.totalCreditos}`);
       
       resultado.cursos.forEach((curso: any, index: number) => {
       console.log(`\n${index + 1}. ${curso.nombre}`);
