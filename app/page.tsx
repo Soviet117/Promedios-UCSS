@@ -44,7 +44,7 @@ const generarDatosDePrueba = (): Curso[] => {
         E1: "14.00",
         E2: "11.00",
         E3: "15.50",
-        EF: "",
+        EF: "", // Nota roja (menor a 10.50)
         PF: ""
       },
       evaluacionesContinuas: {
@@ -104,7 +104,7 @@ const generarDatosDePrueba = (): Curso[] => {
         E1: "19.00",
         E2: "17.50",
         E3: "18.50",
-        EF: "",
+        EF: "12.00",
         PF: ""
       },
       evaluacionesContinuas: {
@@ -120,7 +120,7 @@ const generarDatosDePrueba = (): Curso[] => {
         EC10: ""
       },
       cantidadContinuas: 8,
-      promedioFinal: "19"
+      promedioFinal: ""
     },
     {
       id: "curso_4",
@@ -132,9 +132,9 @@ const generarDatosDePrueba = (): Curso[] => {
       notasPrincipales: {
         EC: "",
         E1: "11.00",
-        E2: "10.50",
+        E2: "10.50", // Justo en el límite
         E3: "13.00",
-        EF: "",
+        EF: "8.50", // Nota roja (menor a 10.50)
         PF: ""
       },
       evaluacionesContinuas: {
@@ -150,7 +150,7 @@ const generarDatosDePrueba = (): Curso[] => {
         EC10: ""
       },
       cantidadContinuas: 6,
-      promedioFinal: "12"
+      promedioFinal: ""
     },
     {
       id: "curso_5",
@@ -164,7 +164,7 @@ const generarDatosDePrueba = (): Curso[] => {
         E1: "15.50",
         E2: "13.00",
         E3: "14.50",
-        EF: "",
+        EF: "18.50",
         PF: ""
       },
       evaluacionesContinuas: {
@@ -186,7 +186,120 @@ const generarDatosDePrueba = (): Curso[] => {
 };
 
 // ======================================================
-// FIN DE DATOS DE PRUEBA
+// FUNCIONES DE CÁLCULO MEJORADAS
+// ======================================================
+
+// Función para calcular EC basado en el modo seleccionado
+const calcularPromedioEC = (curso: Curso, modo: ModoCalculo): { valor: string, esCalculado: boolean } => {
+  if (modo === 'ninguno') {
+    return { valor: curso.notasPrincipales.EC || '', esCalculado: false };
+  }
+
+  const evaluaciones = curso.evaluacionesContinuas;
+  const cantidadHabilitadas = curso.cantidadContinuas || 0;
+
+  if (modo === 'habilitadas') {
+    // Calcular promedio dividiendo entre continuas habilitadas
+    let suma = 0;
+    for (let i = 1; i <= cantidadHabilitadas; i++) {
+      const key = `EC${i}`;
+      const valor = evaluaciones[key];
+      if (valor && valor.trim() !== '') {
+        suma += parseFloat(valor);
+      }
+      // Si está vacío, se considera 0.0 (calculado)
+    }
+    
+    if (cantidadHabilitadas > 0) {
+      return { 
+        valor: (suma / cantidadHabilitadas).toFixed(2), 
+        esCalculado: true 
+      };
+    }
+    return { valor: '', esCalculado: false };
+    
+  } else if (modo === 'publicadas') {
+    // Calcular promedio solo con las notas publicadas (no nulas)
+    let suma = 0;
+    let contador = 0;
+    
+    for (let i = 1; i <= cantidadHabilitadas; i++) {
+      const key = `EC${i}`;
+      const valor = evaluaciones[key];
+      if (valor && valor.trim() !== '') {
+        suma += parseFloat(valor);
+        contador++;
+      }
+    }
+    
+    if (contador > 0) {
+      return { 
+        valor: (suma / contador).toFixed(2), 
+        esCalculado: true 
+      };
+    }
+    return { valor: '', esCalculado: false };
+  }
+
+  return { valor: '', esCalculado: false };
+};
+
+// Función para calcular PF (Promedio Final)
+const calcularPromedioFinal = (curso: Curso, ecValor: string, ecEsCalculado: boolean): { valor: string, esCalculado: boolean } => {
+  // Si no tenemos EC calculada, retornar original
+  if (!ecValor || ecValor.trim() === '') {
+    return { valor: curso.promedioFinal || '', esCalculado: false };
+  }
+
+  const ecNum = parseFloat(ecValor) || 0;
+  const e1Num = parseFloat(curso.notasPrincipales.E1 || '0') || 0;
+  const e2Num = parseFloat(curso.notasPrincipales.E2 || '0') || 0;
+  const e3Num = parseFloat(curso.notasPrincipales.E3 || '0') || 0;
+  const efNum = parseFloat(curso.notasPrincipales.EF || '0') || 0;
+
+  // Fórmula: EC*20% + E1*10% + E2*20% + E3*20% + EF*30%
+  const pf = (ecNum * 0.20) + (e1Num * 0.10) + (e2Num * 0.20) + (e3Num * 0.20) + (efNum * 0.30);
+  
+  return { 
+    valor: pf.toFixed(2), 
+    esCalculado: ecEsCalculado || !curso.notasPrincipales.PF 
+  };
+};
+
+// Función para calcular Promedio Ponderado
+const calcularPromedioPonderado = (cursos: Curso[]): string => {
+  let sumaPonderada = 0;
+  let creditosTotales = 0;
+  let cursosConNota = 0;
+
+  cursos.forEach(curso => {
+    const pf = parseFloat(curso.notasPrincipales.PF || curso.promedioFinal || '0');
+    const creditos = curso.creditos || 0;
+    
+    if (!isNaN(pf) && pf > 0 && creditos > 0) {
+      sumaPonderada += pf * creditos;
+      creditosTotales += creditos;
+      cursosConNota++;
+    }
+  });
+
+  if (creditosTotales > 0 && cursosConNota > 0) {
+    return (sumaPonderada / creditosTotales).toFixed(2);
+  }
+  
+  return '0.00';
+};
+
+// Contar cursos desaprobados (< 10.50)
+const contarCursosDesaprobados = (cursos: Curso[]): number => {
+  return cursos.filter(curso => {
+    const pf = parseFloat(curso.notasPrincipales.PF || curso.promedioFinal || '0');
+    return !isNaN(pf) && pf < 10.50;
+  }).length;
+};
+
+// ======================================================
+// COMPONENTE PRINCIPAL
 // ======================================================
 
 export default function HomePage() {
@@ -198,90 +311,25 @@ export default function HomePage() {
   const [cursosOriginales, setCursosOriginales] = useState<Curso[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [modoPrueba, setModoPrueba] = useState(true);
-  
-  // Nuevo estado para el modo de cálculo
   const [modoCalculo, setModoCalculo] = useState<ModoCalculo>('ninguno');
-
-  // Función para calcular EC basado en el modo seleccionado
-  const calcularPromedioEC = (curso: Curso, modo: ModoCalculo): string => {
-    if (modo === 'ninguno') {
-      return curso.notasPrincipales.EC || '';
-    }
-
-    const evaluaciones = curso.evaluacionesContinuas;
-    const cantidadHabilitadas = curso.cantidadContinuas || 0;
-
-    if (modo === 'habilitadas') {
-      // Calcular promedio dividiendo entre continuas habilitadas
-      let suma = 0;
-      for (let i = 1; i <= cantidadHabilitadas; i++) {
-        const key = `EC${i}`;
-        const valor = evaluaciones[key];
-        if (valor && valor.trim() !== '') {
-          suma += parseFloat(valor);
-        }
-        // Si está vacío, se considera 0.0
-      }
-      
-      if (cantidadHabilitadas > 0) {
-        return (suma / cantidadHabilitadas).toFixed(2);
-      }
-      return '';
-    } else if (modo === 'publicadas') {
-      // Calcular promedio solo con las notas publicadas (no nulas)
-      let suma = 0;
-      let contador = 0;
-      
-      for (let i = 1; i <= cantidadHabilitadas; i++) {
-        const key = `EC${i}`;
-        const valor = evaluaciones[key];
-        if (valor && valor.trim() !== '') {
-          suma += parseFloat(valor);
-          contador++;
-        }
-      }
-      
-      if (contador > 0) {
-        return (suma / contador).toFixed(2);
-      }
-      return '';
-    }
-
-    return '';
-  };
-
-  // Función para calcular PF (Promedio Final)
-  const calcularPromedioFinal = (curso: Curso, ec: string): string => {
-    // Solo calculamos si tenemos EC
-    if (!ec || ec.trim() === '') {
-      return curso.promedioFinal || '';
-    }
-
-    const ecNum = parseFloat(ec);
-    const e1Num = parseFloat(curso.notasPrincipales.E1 || '0');
-    const e2Num = parseFloat(curso.notasPrincipales.E2 || '0');
-    const e3Num = parseFloat(curso.notasPrincipales.E3 || '0');
-    const efNum = parseFloat(curso.notasPrincipales.EF || '0');
-
-    // Fórmula: EC*20% + E1*10% + E2*20% + E3*20% + EF*30%
-    const pf = (ecNum * 0.20) + (e1Num * 0.10) + (e2Num * 0.20) + (e3Num * 0.20) + (efNum * 0.30);
-    
-    return pf.toFixed(2);
-  };
 
   // Efecto para recalcular cuando cambia el modo
   useEffect(() => {
     if (cursosOriginales.length > 0) {
       const cursosActualizados = cursosOriginales.map(curso => {
-        const ec = calcularPromedioEC(curso, modoCalculo);
-        const pf = calcularPromedioFinal(curso, ec);
+        const { valor: ecValor, esCalculado: ecEsCalculado } = calcularPromedioEC(curso, modoCalculo);
+        const { valor: pfValor, esCalculado: pfEsCalculado } = calcularPromedioFinal(curso, ecValor, ecEsCalculado);
         
         return {
           ...curso,
           notasPrincipales: {
             ...curso.notasPrincipales,
-            EC: ec,
-            PF: pf
+            EC: ecValor,
+            PF: pfValor
+          },
+          notasCalculadas: {
+            ecCalculado: ecEsCalculado,
+            pfCalculado: pfEsCalculado
           }
         };
       });
@@ -385,43 +433,24 @@ export default function HomePage() {
     setModoCalculo('ninguno');
   };
 
-  // Calcular promedio general
-  const calcularPromedioGeneral = () => {
-    if (cursos.length === 0) return '0.00';
-    
-    const cursosConNota = cursos.filter(curso => {
-      const pf = parseFloat(curso.notasPrincipales.PF || curso.promedioFinal);
-      return !isNaN(pf) && pf > 0;
-    });
-    
-    if (cursosConNota.length === 0) return '0.00';
-    
-    const suma = cursosConNota.reduce((total, curso) => {
-      return total + parseFloat(curso.notasPrincipales.PF || curso.promedioFinal);
-    }, 0);
-    
-    return (suma / cursosConNota.length).toFixed(2);
-  };
-
-  // Calcular créditos totales
+  // Calcular estadísticas
   const calcularCreditosTotales = () => {
     return cursos.reduce((total, curso) => total + curso.creditos, 0);
   };
 
-  // Contar cursos aprobados
   const contarCursosAprobados = () => {
     return cursos.filter(curso => {
-      const pf = parseFloat(curso.notasPrincipales.PF || curso.promedioFinal);
+      const pf = parseFloat(curso.notasPrincipales.PF || curso.promedioFinal || '0');
       return !isNaN(pf) && pf >= 10.5;
     }).length;
   };
 
-  // Contar cursos en riesgo
-  const contarCursosEnRiesgo = () => {
-    return cursos.filter(curso => {
-      const pf = parseFloat(curso.notasPrincipales.PF || curso.promedioFinal);
-      return !isNaN(pf) && pf >= 10.5 && pf < 13;
-    }).length;
+  const contarCursosDesaprobadosComponente = () => {
+    return contarCursosDesaprobados(cursos);
+  };
+
+  const calcularPromedioPonderadoComponente = () => {
+    return calcularPromedioPonderado(cursos);
   };
 
   // Toggle entre modo prueba y real
@@ -440,6 +469,9 @@ export default function HomePage() {
   };
 
   if (isLoggedIn && cursos.length > 0) {
+    const promedioPonderado = calcularPromedioPonderadoComponente();
+    const cursosDesaprobados = contarCursosDesaprobadosComponente();
+
     return (
       <div className="min-h-screen bg-gray-50 p-4 md:p-8">
         {/* Header con estadísticas */}
@@ -531,8 +563,11 @@ export default function HomePage() {
                   ℹ️ Modo activo: <strong>
                     {modoCalculo === 'habilitadas' ? 'Cálculo por continuas habilitadas' : 'Cálculo por continuas publicadas'}
                   </strong>
-                  {modoCalculo === 'habilitadas' && ' - Las EC sin nota se consideran como 0.0'}
+                  {modoCalculo === 'habilitadas' && ' - Las EC sin nota se consideran como 0.0 (gris)'}
                   {modoCalculo === 'publicadas' && ' - Solo se muestran las EC con nota publicada'}
+                </p>
+                <p className="text-xs text-blue-700 mt-1">
+                  Notas calculadas aparecen en color gris más claro para diferenciarlas de las originales.
                 </p>
               </div>
             )}
@@ -540,6 +575,7 @@ export default function HomePage() {
 
           {/* Estadísticas */}
           <div className="grid grid-cols-2 md:grid-cols-5 gap-3 md:gap-4 mb-6">
+            {/* Cursos totales */}
             <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
               <div className="text-2xl md:text-3xl font-bold text-blue-600">
                 {cursos.length}
@@ -547,13 +583,22 @@ export default function HomePage() {
               <div className="text-sm text-gray-600">Cursos totales</div>
             </div>
             
+            {/* Promedio ponderado */}
             <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
-              <div className="text-2xl md:text-3xl font-bold text-green-600">
-                {calcularPromedioGeneral()}
+              <div className={`text-2xl md:text-3xl font-bold ${
+                parseFloat(promedioPonderado) >= 14 ? 'text-green-600' :
+                parseFloat(promedioPonderado) >= 11 ? 'text-blue-600' :
+                'text-red-600'
+              }`}>
+                {promedioPonderado}
               </div>
-              <div className="text-sm text-gray-600">Promedio general</div>
+              <div className="text-sm text-gray-600">Promedio ponderado</div>
+              <div className="text-xs text-gray-500 mt-1">
+                {(calcularCreditosTotales())} créditos
+              </div>
             </div>
             
+            {/* Créditos totales */}
             <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
               <div className="text-2xl md:text-3xl font-bold text-purple-600">
                 {calcularCreditosTotales()}
@@ -561,18 +606,26 @@ export default function HomePage() {
               <div className="text-sm text-gray-600">Créditos totales</div>
             </div>
             
+            {/* Cursos aprobados */}
             <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
-              <div className="text-2xl md:text-3xl font-bold text-orange-600">
+              <div className="text-2xl md:text-3xl font-bold text-green-600">
                 {contarCursosAprobados()}
               </div>
               <div className="text-sm text-gray-600">Cursos aprobados</div>
+              <div className="text-xs text-gray-500 mt-1">
+                ≥ 10.50
+              </div>
             </div>
             
+            {/* Cursos desaprobados */}
             <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
               <div className="text-2xl md:text-3xl font-bold text-red-600">
-                {contarCursosEnRiesgo()}
+                {cursosDesaprobados}
               </div>
-              <div className="text-sm text-gray-600">En riesgo</div>
+              <div className="text-sm text-gray-600">Cursos desaprobados</div>
+              <div className="text-xs text-gray-500 mt-1">
+                &lt; 10.50
+              </div>
             </div>
           </div>
 
@@ -625,6 +678,10 @@ export default function HomePage() {
       </div>
     );
   }
+
+  // Si no está logueado, mostrar formulario (mantener igual)
+  // ... (código del formulario de login sin cambios) ...
+
 
   // Si no está logueado, mostrar formulario
   return (
