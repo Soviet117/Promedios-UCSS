@@ -9,7 +9,7 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
   
   try {
     browser = await puppeteer.launch({
-      headless: new,
+      headless: true,
       args: ['--no-sandbox', '--disable-setuid-sandbox']
     });
     
