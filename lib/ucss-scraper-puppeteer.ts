@@ -181,9 +181,12 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
       if (browser) {
         try {
           await browser.close();
-        } catch (closeError) {
-          console.log(`Error cerrando navegador:`, closeError.message);
-        }
+       } catch (closeError) {
+  const errorMsg = closeError instanceof Error 
+    ? closeError.message 
+    : 'Error desconocido al cerrar navegador';
+  console.log(`Error cerrando navegador:`, errorMsg);
+}
       }
       
       if (attempt === MAX_RETRIES) {
