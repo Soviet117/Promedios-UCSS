@@ -1,5 +1,6 @@
-import puppeteer, { Browser, Page } from 'puppeteer';
 import * as cheerio from 'cheerio';
+import puppeteer,{ Browser, Page }  from 'puppeteer-core'; // <-- Usa puppeteer-core
+import chromium from '@sparticuz/chromium'; 
 
 export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
   const MAX_RETRIES = 3;
@@ -14,25 +15,19 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
     
     try {
       // CONFIGURACIÓN ESPECÍFICA PARA RENDER
-      browser = await puppeteer.launch({
-        headless: true,
-        args: [
-          '--no-sandbox',
-          '--disable-setuid-sandbox',
-          '--disable-dev-shm-usage',
-          '--disable-gpu',
-          '--no-first-run',
-          '--no-zygote',
-          '--single-process',
-          '--ignore-certificate-errors',
-          '--ignore-certificate-errors-spki-list',
-          '--disable-web-security',
-          '--disable-features=IsolateOrigins,site-per-process',
-          '--window-size=1920,1080'
-        ],
-
-        timeout: 60000
-      });
+       browser = await puppeteer.launch({
+  args: [
+    ...chromium.args, // <-- Usa los argumentos optimizados
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    '--disable-dev-shm-usage',
+    '--disable-gpu'
+  ],
+  defaultViewport: { width: 1920, height: 1080 }, // <-- Define el viewport directamente
+  executablePath: await chromium.executablePath(), // <-- Esta SÍ es la función correcta
+  headless: true, // <-- Establece 'true' directamente
+  //ignoreHTTPSErrors: true,
+});
       
       const page: Page = await browser.newPage();
       await page.setDefaultNavigationTimeout(60000); // Aumentado para Render
