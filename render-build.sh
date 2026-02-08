@@ -1,16 +1,13 @@
 #!/bin/bash
 echo "🔄 Iniciando build para Render..."
 
-# Limpiar caché de build
-rm -rf .next
+# Limpiar CACHÉ COMPLETA de dependencias y build
+echo "🧹 Limpiando caché..."
+rm -rf .next node_modules package-lock.json
 
-# Instalar dependencias específicas que pueden faltar
-echo "📦 Verificando dependencias críticas..."
-npm list @tailwindcss/postcss || npm install @tailwindcss/postcss@latest
-npm list tailwindcss || npm install tailwindcss@latest
-
-# Instalar todas las dependencias
-npm ci
+# Instalar TODO desde cero (esto regenerará package-lock.json)
+echo "📦 Instalando TODAS las dependencias..."
+npm install
 
 # Build con verificación
 echo "🔨 Construyendo aplicación..."
@@ -20,6 +17,7 @@ if npm run build; then
     # Verificar que se creó el build
     if [ -d ".next" ] && [ -f ".next/BUILD_ID" ]; then
         echo "✓ Build de producción verificado"
+        exit 0
     else
         echo "❌ ERROR: No se creó el build de producción"
         exit 1
