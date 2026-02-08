@@ -1,6 +1,7 @@
 #!/bin/bash
 echo "🔄 Iniciando build para Render..."
-rm -rf node_modules .next package-lock.json
-npm install
+# Solo limpia la caché de build, NO node_modules
+rm -rf .next
+npm ci --only=production
 npm run build
 echo "✅ Build completado exitosamente!"
