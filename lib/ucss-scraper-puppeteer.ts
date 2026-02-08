@@ -32,7 +32,7 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
         ],
         // Configuraciones importantes para entornos serverless/cloud
         executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
-        ignoreHTTPSErrors: true,
+        //ignoreHTTPSErrors: true,
         // Timeout más largo para entornos cloud
         timeout: 60000
       });
@@ -119,7 +119,7 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
       });
       
       // Esperar un momento para que cargue la página
-      await page.waitForTimeout(3000);
+      await new Promise(resolve => setTimeout(resolve, 3000));
       
       const pageContent = await page.content();
       if (pageContent.includes('Usuario o contraseña incorrectos') || 
@@ -146,7 +146,7 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
         page.waitForSelector('div.css-curso-card', { timeout: 20000 }),
         page.waitForSelector('.card', { timeout: 20000 }),
         page.waitForSelector('table', { timeout: 20000 }),
-        page.waitForTimeout(5000) // Esperar 5 segundos como máximo
+        await new Promise(resolve => setTimeout(resolve, 3000)) // Esperar 5 segundos como máximo
       ]);
       
       const notasHtml = await page.content();
