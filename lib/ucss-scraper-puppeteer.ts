@@ -30,10 +30,7 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
           '--disable-features=IsolateOrigins,site-per-process',
           '--window-size=1920,1080'
         ],
-        // Configuraciones importantes para entornos serverless/cloud
-        //executablePath: process.env.PUPPETEER_EXECUTABLE_PATH || undefined,
-        //ignoreHTTPSErrors: true,
-        // Timeout más largo para entornos cloud
+
         timeout: 60000
       });
       

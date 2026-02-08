@@ -2,7 +2,7 @@
 echo "🔄 Iniciando build para Render..."
 
 # Limpiar cache
-rm -rf .next
+rm -rf .next .next/standalone .next/cache
 
 # 1. INSTALAR CHROMIUM Y DEPENDENCIAS DEL SISTEMA
 echo "🔧 Instalando Chromium y dependencias del sistema..."
