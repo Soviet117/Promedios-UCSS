@@ -23,7 +23,7 @@ interface Curso {
   promedioFinal: string;
 }
 
-// Tipo para el modo de cálculo
+// Tipos para el modo de cálculo
 type ModoCalculo = 'ninguno' | 'habilitadas' | 'publicadas';
 
 // ======================================================
@@ -44,7 +44,7 @@ const generarDatosDePrueba = (): Curso[] => {
         E1: "14.00",
         E2: "11.00",
         E3: "15.50",
-        EF: "", // Nota roja (menor a 10.50)
+        EF: "",
         PF: ""
       },
       evaluacionesContinuas: {
@@ -132,9 +132,9 @@ const generarDatosDePrueba = (): Curso[] => {
       notasPrincipales: {
         EC: "",
         E1: "11.00",
-        E2: "10.50", // Justo en el límite
+        E2: "10.50",
         E3: "13.00",
-        EF: "8.50", // Nota roja (menor a 10.50)
+        EF: "8.50",
         PF: ""
       },
       evaluacionesContinuas: {
@@ -189,7 +189,7 @@ const generarDatosDePrueba = (): Curso[] => {
 // FUNCIONES DE CÁLCULO MEJORADAS
 // ======================================================
 
-// Función para calcular EC basado en el modo seleccionado
+// Aquí cree la logica para poder calcular EC según el modo seleccionado
 const calcularPromedioEC = (curso: Curso, modo: ModoCalculo): { valor: string, esCalculado: boolean } => {
   if (modo === 'ninguno') {
     return { valor: curso.notasPrincipales.EC || '', esCalculado: false };
@@ -199,7 +199,7 @@ const calcularPromedioEC = (curso: Curso, modo: ModoCalculo): { valor: string, e
   const cantidadHabilitadas = curso.cantidadContinuas || 0;
 
   if (modo === 'habilitadas') {
-    // Calcular promedio dividiendo entre continuas habilitadas
+    // Calculamos el promedio dividiendo entre continuas habilitadas
     let suma = 0;
     for (let i = 1; i <= cantidadHabilitadas; i++) {
       const key = `EC${i}`;
@@ -207,7 +207,6 @@ const calcularPromedioEC = (curso: Curso, modo: ModoCalculo): { valor: string, e
       if (valor && valor.trim() !== '') {
         suma += parseFloat(valor);
       }
-      // Si está vacío, se considera 0.0 (calculado)
     }
     
     if (cantidadHabilitadas > 0) {
@@ -219,7 +218,7 @@ const calcularPromedioEC = (curso: Curso, modo: ModoCalculo): { valor: string, e
     return { valor: '', esCalculado: false };
     
   } else if (modo === 'publicadas') {
-    // Calcular promedio solo con las notas publicadas (no nulas)
+    // Calculamos el promedio solo con las notas publicadas
     let suma = 0;
     let contador = 0;
     
@@ -244,9 +243,9 @@ const calcularPromedioEC = (curso: Curso, modo: ModoCalculo): { valor: string, e
   return { valor: '', esCalculado: false };
 };
 
-// Función para calcular PF (Promedio Final)
+// Función para calcular PF
 const calcularPromedioFinal = (curso: Curso, ecValor: string, ecEsCalculado: boolean): { valor: string, esCalculado: boolean } => {
-  // Si no tenemos EC calculada, retornar original
+ 
   if (!ecValor || ecValor.trim() === '') {
     return { valor: curso.promedioFinal || '', esCalculado: false };
   }
@@ -290,7 +289,6 @@ const calcularPromedioPonderado = (cursos: Curso[]): string => {
   return '0.00';
 };
 
-// Contar cursos desaprobados (< 10.50)
 const contarCursosDesaprobados = (cursos: Curso[]): number => {
   return cursos.filter(curso => {
     const pf = parseFloat(curso.notasPrincipales.PF || curso.promedioFinal || '0');
@@ -680,10 +678,7 @@ export default function HomePage() {
   }
 
   // Si no está logueado, mostrar formulario (mantener igual)
-  // ... (código del formulario de login sin cambios) ...
 
-
-  // Si no está logueado, mostrar formulario
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <div className="max-w-4xl mx-auto">

@@ -14,34 +14,30 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
     let browser: Browser | null = null;
     
     try {
-      // CONFIGURACIÓN ESPECÍFICA PARA RENDER
+      // Configuración para RENDER
        browser = await puppeteer.launch({
-  args: [
-    ...chromium.args, // <-- Usa los argumentos optimizados
-    '--no-sandbox',
-    '--disable-setuid-sandbox',
-    '--disable-dev-shm-usage',
-    '--disable-gpu'
-  ],
-  defaultViewport: { width: 1920, height: 1080 }, // <-- Define el viewport directamente
-  executablePath: await chromium.executablePath(), // <-- Esta SÍ es la función correcta
-  headless: true, // <-- Establece 'true' directamente
-  //ignoreHTTPSErrors: true,
-});
+        args: [
+          ...chromium.args,
+          '--no-sandbox',
+          '--disable-setuid-sandbox',
+          '--disable-dev-shm-usage',
+          '--disable-gpu'
+        ],
+        defaultViewport: { width: 1920, height: 1080 },
+        executablePath: await chromium.executablePath(),
+        headless: true,
+      });
       
       const page: Page = await browser.newPage();
-      await page.setDefaultNavigationTimeout(60000); // Aumentado para Render
-      await page.setDefaultTimeout(60000); // Aumentado para Render
+      await page.setDefaultNavigationTimeout(60000);
+      await page.setDefaultTimeout(60000);
       
-      // User-Agent más actualizado
       await page.setUserAgent('Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/128.0.0.0 Safari/537.36');
       await page.setViewport({ width: 1920, height: 1080 });
       
-      // Configurar request interception para evitar recursos innecesarios
       await page.setRequestInterception(true);
       page.on('request', (req) => {
         const resourceType = req.resourceType();
-        // Bloquear recursos innecesarios para mayor velocidad
         if (['image', 'stylesheet', 'font', 'media'].includes(resourceType)) {
           req.abort();
         } else {
@@ -61,14 +57,13 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
         console.log(`✅ Intento ${attempt}: Navegación exitosa`);
       } catch (navError: any) {
         console.log(`⚠️  Intento ${attempt}: Error de navegación: ${navError.message}`);
-        // Intentar con waitUntil más relajado
+
         await page.goto(`${baseURL}/login/ingresar.aspx`, {
           waitUntil: 'domcontentloaded',
           timeout: 45000
         });
       }
       
-      // Esperar dinámicamente por los campos de login
       const loginFieldsLoaded = await Promise.race([
         page.waitForSelector('input[name="txtUsuarioMail"]', { timeout: 15000 }),
         page.waitForSelector('input[type="text"]', { timeout: 15000 }),
@@ -76,7 +71,7 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
       ]).catch(() => null);
       
       if (!loginFieldsLoaded) {
-        // Verificar si ya estamos logueados o hay error
+
         const pageContent = await page.content();
         if (pageContent.includes('Usuario o contraseña incorrectos')) {
           throw new Error('Credenciales incorrectas');
@@ -84,14 +79,14 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
         throw new Error('No se pudo cargar la página de login');
       }
       
-      // Intentar diferentes selectores para usuario
+      // Identificar el selector para usuario
       try {
         await page.type('input[name="txtUsuarioMail"]', usuario);
       } catch {
         await page.type('input[type="text"]', usuario);
       }
       
-      // Intentar diferentes selectores para contraseña
+      // Identificar selectores para contraseña
       try {
         await page.type('input[name="txtPwd"]', password);
       } catch {
@@ -100,7 +95,7 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
       
       console.log(`🔑 Intento ${attempt}: Enviando credenciales...`);
       
-      // Hacer click y esperar navegación con múltiples estrategias
+      // Click
       await Promise.all([
         page.waitForNavigation({ waitUntil: 'networkidle0', timeout: 30000 })
           .catch(() => page.waitForNavigation({ waitUntil: 'domcontentloaded', timeout: 30000 })),
@@ -110,7 +105,6 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
         console.log('⚠️  Navegación no detectada, continuando...');
       });
       
-      // Esperar un momento para que cargue la página
       await new Promise(resolve => setTimeout(resolve, 3000));
       
       const pageContent = await page.content();
@@ -133,7 +127,6 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
         });
       });
       
-      // Esperar dinámicamente por los cursos
       await Promise.race([
         page.waitForSelector('div.css-curso-card', { timeout: 20000 }),
         page.waitForSelector('.card', { timeout: 20000 }),
@@ -145,7 +138,7 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
       const $ = cheerio.load(notasHtml);
       const cursosExtraidos: any[] = [];
       
-      // Buscar cursos con múltiples selectores
+      // Buscamos cursos con múltiples selectores
       const cursoSelectors = ['div.css-curso-card', '.card', 'div[class*="curso"]', 'div[class*="materia"]'];
       
       for (const selector of cursoSelectors) {
@@ -156,7 +149,7 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
           cursos.each((index, element) => {
             const curso = $(element);
             
-            // Extraer nombre del curso
+            // Extraemos el nombre del curso
             let nombreCompleto = '';
             const nombreSelectors = ['b', 'strong', 'h3', 'h4', '.nombre-curso', '.curso-nombre'];
             for (const nombreSelector of nombreSelectors) {
@@ -167,7 +160,7 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
               }
             }
             
-            // Extraer información del curso (código, créditos, tipo)
+            // Extraemos información del curso (código, créditos, tipo)
             const infoItems = curso.find('p, span, div');
             let codigo = '', creditos = '', tipo = '';
             
@@ -184,7 +177,7 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
               }
             });
             
-            // Extraer docente
+            // Extraemos al docente
             let docente = '';
             const docenteSelectors = ['p', 'span', 'div'];
             for (const docSelector of docenteSelectors) {
@@ -198,7 +191,7 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
               if (docente) break;
             }
             
-            // Buscar tabla de notas
+            // Aqui vamos con la tabla de notas
             const notas: Record<string, string> = {};
             const tablaSelectors = ['table', '.table', '.css-curso-card-tabla-notas'];
             
@@ -206,7 +199,7 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
               const tablaPrincipal = curso.find(tablaSelector);
               if (tablaPrincipal.length > 0) {
                 tablaPrincipal.find('tr').each((rowIndex, row) => {
-                  if (rowIndex === 1) { // Segunda fila (después de headers)
+                  if (rowIndex === 1) {
                     const celdas = $(row).find('td, th');
                     const headers = ['EC', 'E1', 'E2', 'E3', 'EF', 'PF'];
                     
@@ -224,11 +217,10 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
               }
             }
             
-            // Buscar evaluaciones continuas
+            // Ahora con las evaluaciones continuas
             const evaluacionesContinuas: Record<string, string> = {};
             let Ncontinuas = 0;
-            
-            // Buscar cualquier tabla adicional
+
             const tablas = curso.find('table');
             if (tablas.length > 1) {
               const segundaTabla = tablas.eq(1);
@@ -247,7 +239,6 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
               });
             }
             
-            // Solo agregar si tiene nombre
             if (nombreCompleto) {
               cursosExtraidos.push({
                 id: `curso_${cursosExtraidos.length + 1}`,
@@ -266,16 +257,15 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
             }
           });
           
-          break; // Salir del loop si encontramos cursos
+          break;
         }
       }
       
       if (cursosExtraidos.length === 0) {
         console.log('⚠️  No se encontraron cursos con los selectores usuales, intentando extracción manual...');
-        // Extracción alternativa si no se encuentran los elementos esperados
         const allText = $('body').text();
         if (allText.includes('notas') || allText.includes('curso') || allText.includes('materia')) {
-          // Agregar un curso genérico como fallback
+          // Si no se encuentra un curso se carga uno genérico como fallback
           cursosExtraidos.push({
             id: 'curso_1',
             nombre: 'Cursos detectados (estructura no estándar)',
@@ -333,7 +323,6 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
   
   const errorMessage = lastError?.message || 'Error desconocido';
   
-  // Mensajes de error más específicos
   if (errorMessage.includes('SSL') || errorMessage.includes('certificate')) {
     throw new Error(`Error de certificado SSL con la intranet UCSS. Esto es común en Render.`);
   } else if (errorMessage.includes('Timeout') || errorMessage.includes('timeout')) {

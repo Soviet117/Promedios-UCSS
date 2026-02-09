@@ -30,7 +30,6 @@ export async function POST(request: NextRequest) {
     if (resultado.cursos && resultado.cursos.length > 0) {
       console.log(`📚 Total de cursos: ${resultado.cantidadCursos}`);
       
-      // Calcular estadísticas para el log
       const creditosTotales = resultado.cursos.reduce((sum: number, curso: any) => 
         sum + (curso.creditos || 0), 0);
       console.log(`📖 Total de Créditos: ${creditosTotales}`);
@@ -75,7 +74,7 @@ export async function POST(request: NextRequest) {
 
     return NextResponse.json({
       ...resultado,
-      // Añadir información adicional útil para el frontend
+
       metadata: {
         fechaExtraccion: new Date().toISOString(),
         creditosTotales: resultado.cursos.reduce((sum: number, curso: any) => 
@@ -92,7 +91,6 @@ export async function POST(request: NextRequest) {
     let sugerencia = 'Intenta nuevamente en unos segundos.';
     let tipoError = 'desconocido';
     
-    // CATEGORIZAR ERRORES PARA MEJOR EXPERIENCIA DE USUARIO
     if (error.message.includes('Credenciales incorrectas')) {
       mensajeError = 'Credenciales incorrectas.';
       sugerencia = 'Verifica tu usuario y contraseña de la intranet UCSS.';
@@ -125,7 +123,6 @@ export async function POST(request: NextRequest) {
       tipoError = 'tecnico';
     }
     
-    // REGISTRO DETALLADO PARA DESARROLLO
     if (process.env.NODE_ENV === 'development') {
       console.log('📋 Detalles del error:', {
         tipo: tipoError,
@@ -156,12 +153,11 @@ export async function OPTIONS() {
       'Access-Control-Allow-Origin': '*',
       'Access-Control-Allow-Methods': 'POST, OPTIONS, GET',
       'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-      'Access-Control-Max-Age': '86400' // Cache preflight por 24 horas
+      'Access-Control-Max-Age': '86400'
     },
   });
 }
 
-// Endpoint para verificar estado del servicio
 export async function GET() {
   return NextResponse.json({
     status: 'operativo',
