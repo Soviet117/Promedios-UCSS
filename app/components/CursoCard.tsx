@@ -7,7 +7,6 @@ interface CursoCardProps {
   creditos: number;
   tipo: string;
   docente: string;
-  // Notas principales
   notasPrincipales: {
     EC?: string;
     E1?: string;
@@ -16,11 +15,8 @@ interface CursoCardProps {
     EF?: string;
     PF?: string;
   };
-  // Evaluaciones continuas
   evaluacionesContinuas: Record<string, string>;
-  // Cantidad de EC habilitadas
   cantidadContinuas?: number;
-  // Modo de cálculo
   modoCalculo?: 'ninguno' | 'habilitadas' | 'publicadas';
   className?: string;
 }
@@ -38,12 +34,10 @@ const CursoCard: FC<CursoCardProps> = ({
   className = ''
 }) => {
   
-  // Función para obtener las EC a mostrar según el modo
   const obtenerEvaluacionesMostrar = () => {
     const evaluaciones = [];
     
     if (modoCalculo === 'publicadas') {
-      // Modo publicadas: solo las que tienen valor
       for (let i = 1; i <= cantidadContinuas; i++) {
         const key = `EC${i}`;
         const valor = evaluacionesContinuas[key];
@@ -57,22 +51,19 @@ const CursoCard: FC<CursoCardProps> = ({
         }
       }
     } else {
-      // Modo ninguno o habilitadas: mostrar todas las habilitadas
       for (let i = 1; i <= cantidadContinuas; i++) {
         const key = `EC${i}`;
         const valor = evaluacionesContinuas[key];
         const tieneValor = valor && valor.trim() !== '';
         
         if (modoCalculo === 'habilitadas') {
-          // En modo habilitadas, las vacías se muestran como "0.0" (calculadas)
           evaluaciones.push({
             label: key,
             value: tieneValor ? valor : '0.0',
             isPublicada: tieneValor,
-            esCalculada: !tieneValor // Las vacías son calculadas
+            esCalculada: !tieneValor
           });
         } else {
-          // Modo ninguno: mostrar "--" si están vacías
           evaluaciones.push({
             label: key,
             value: tieneValor ? valor : '--',
@@ -88,47 +79,36 @@ const CursoCard: FC<CursoCardProps> = ({
 
   const evaluacionesMostrar = obtenerEvaluacionesMostrar();
 
-  // Función para determinar el color de una nota
   const obtenerColorNota = (notaStr: string): string => {
     const nota = parseFloat(notaStr);
     if (isNaN(nota)) return 'text-gray-500';
     
     if (nota < 10.50) {
       return 'text-red-600 font-bold';
-    } else if (nota >= 17) {
+    } else if (nota >= 10.50) {
       return 'text-black';
-    } else if (nota >= 14) {
-      return 'text-black';
-    } else if (nota >= 11) {
-      return 'text-black';
-    }
+    } 
     return 'text-gray-800';
   };
 
-  // Función para determinar si una nota es calculada
   const esNotaCalculada = (valor: string, esCalculada: boolean): boolean => {
-    // Si es "0.0" en modo habilitadas y fue calculada, o si es valor vacío
     return esCalculada || valor === '0.0';
   };
 
-  // Obtener color para nota calculada (gris más claro)
   const obtenerColorCalculada = (): string => {
-    return 'text-gray-400'; // Gris más claro para notas calculadas
+    return 'text-gray-400';
   };
 
-  // Obtener color para EC (depende si es calculada o no)
   const obtenerColorEC = (): string => {
     const ecValor = notasPrincipales?.EC || '';
     if (modoCalculo !== 'ninguno' && ecValor) {
-      // Si estamos en modo cálculo y hay valor de EC, es calculada
-      return 'text-gray-400'; // Gris para EC calculada
+      return 'text-gray-400';
     }
     return obtenerColorNota(ecValor);
   };
 
   return (
     <div className={`bg-white rounded-lg shadow-md border border-gray-200 p-4 mb-6 ${className}`}>
-      {/* Encabezado del curso */}
       <div className="mb-4 bg-blue-100 p-3 rounded-lg">
         <h2 className="text-lg font-bold text-black mb-2">{nombre}</h2>
         <div className="flex flex-wrap gap-4 mb-2 text-sm">
@@ -152,7 +132,6 @@ const CursoCard: FC<CursoCardProps> = ({
         </p>
       </div>
 
-      {/* Indicador de modo activo */}
       {modoCalculo !== 'ninguno' && (
         <div className={`mb-3 p-2 rounded text-xs ${
           modoCalculo === 'habilitadas' 
@@ -181,7 +160,6 @@ const CursoCard: FC<CursoCardProps> = ({
             </thead>
             <tbody>
               <tr>
-                {/* EC */}
                 <td className={`border border-gray-300 py-2 px-2 text-sm text-center font-bold ${
                   modoCalculo !== 'ninguno' && notasPrincipales?.EC 
                     ? obtenerColorCalculada() 
@@ -193,7 +171,6 @@ const CursoCard: FC<CursoCardProps> = ({
                   )}
                 </td>
                 
-                {/* E1 */}
                 <td className={`border border-gray-300 py-2 px-2 text-sm text-center font-bold ${
                   modoCalculo !== 'ninguno' && !notasPrincipales?.E1
                     ? 'text-gray-400' // Gris para E1 calculada como 0.0
@@ -208,7 +185,6 @@ const CursoCard: FC<CursoCardProps> = ({
                   )}
                 </td>
                 
-                {/* E2 */}
                 <td className={`border border-gray-300 py-2 px-2 text-sm text-center font-bold ${
                   modoCalculo !== 'ninguno' && !notasPrincipales?.E2
                     ? 'text-gray-400' // Gris para E2 calculada como 0.0
@@ -223,7 +199,6 @@ const CursoCard: FC<CursoCardProps> = ({
                   )}
                 </td>
                 
-                {/* E3 */}
                 <td className={`border border-gray-300 py-2 px-2 text-sm text-center font-bold ${
                   modoCalculo !== 'ninguno' && !notasPrincipales?.E3
                     ? 'text-gray-400' // Gris para E3 calculada como 0.0
@@ -238,7 +213,6 @@ const CursoCard: FC<CursoCardProps> = ({
                   )}
                 </td>
                 
-                {/* EF */}
                 <td className={`border border-gray-300 py-2 px-2 text-sm text-center font-bold ${
                   modoCalculo !== 'ninguno' && !notasPrincipales?.EF
                     ? 'text-gray-400' // Gris para EF calculada como 0.0
@@ -253,7 +227,6 @@ const CursoCard: FC<CursoCardProps> = ({
                   )}
                 </td>
                 
-                {/* PF */}
                 <td className={`border border-gray-300 py-2 px-2 text-sm text-center font-bold text-lg bg-gray-50 ${
                   modoCalculo !== 'ninguno' && notasPrincipales?.PF
                     ? 'text-gray-400' // Gris para PF calculado
