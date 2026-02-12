@@ -4,9 +4,7 @@ import { calcularCreditosTotales, calcularPromedioPonderado, contarCursosAprobad
 
 interface DashboardHeaderProps {
   usuario: string;
-  modoPrueba: boolean;
   cursos: Curso[];
-  onToggleModo: () => void;
   onLogout: () => void;
   modoCalculo: ModoCalculo;
   onModoCalculoChange: (modo: ModoCalculo) => void;
@@ -14,9 +12,7 @@ interface DashboardHeaderProps {
 
 export default function DashboardHeader({
   usuario,
-  modoPrueba,
   cursos,
-  onToggleModo,
   onLogout,
   modoCalculo,
   onModoCalculoChange
@@ -29,35 +25,18 @@ export default function DashboardHeader({
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
         <div>
           <h1 className="text-2xl md:text-3xl font-bold text-gray-800 mb-2">
-            📚 {modoPrueba ? 'MODO DEMO - ' : ''}Mis Cursos UCSS
+            📚 Mis Cursos UCSS
           </h1>
-          <div className="flex flex-col md:flex-row md:items-center gap-2">
-            <p className="text-gray-600">
-              Usuario: <span className="font-semibold">{usuario}</span>
-            </p>
-            {modoPrueba && (
-              <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
-                🎭 Modo Demo Activo
-              </span>
-            )}
-          </div>
+          <p className="text-gray-600">
+            Usuario: <span className="font-semibold">{usuario}</span>
+          </p>
         </div>
-        <div className="flex flex-col md:flex-row gap-2">
-          {modoPrueba && (
-            <button
-              onClick={onToggleModo}
-              className="px-4 py-2 bg-blue-100 text-blue-700 hover:bg-blue-200 rounded-lg font-medium transition"
-            >
-              🔄 Cambiar a modo real
-            </button>
-          )}
-          <button
-            onClick={onLogout}
-            className="px-4 py-2 bg-red-100 text-red-700 hover:bg-red-200 rounded-lg font-medium transition"
-          >
-            Cerrar sesión
-          </button>
-        </div>
+        <button
+          onClick={onLogout}
+          className="px-4 py-2 bg-red-100 text-red-700 hover:bg-red-200 rounded-lg font-medium transition"
+        >
+          Cerrar sesión
+        </button>
       </div>
 
       {/* Selectores de modo de cálculo */}
@@ -178,21 +157,6 @@ export default function DashboardHeader({
           </div>
         </div>
       </div>
-
-      {/* Nota de demo */}
-      {modoPrueba && (
-        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
-          <div className="flex items-start gap-3">
-            <div className="text-yellow-600">🎭</div>
-            <div>
-              <h3 className="font-semibold text-yellow-800">Modo Demo Activo</h3>
-              <p className="text-yellow-700 text-sm mt-1">
-                Estás viendo datos de prueba. Para ver tus datos reales, haz clic en "Cambiar a modo real" y usa tus credenciales de la intranet UCSS.
-              </p>
-            </div>
-          </div>
-        </div>
-      )}
     </div>
   );
 }

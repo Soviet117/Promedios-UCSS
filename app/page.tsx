@@ -6,7 +6,6 @@ import DashboardHeader from './components/DashboardHeader';
 import CursosGrid from './components/CursosGrid';
 import LoginForm from './components/LoginForm/LoginForm';
 import { loginConBackendReal } from './services/apiService';
-import { generarDatosDePrueba } from './services/demoData';
 import { actualizarCursosConModoCalculo } from './services/calculos';
 
 export default function HomePage() {
@@ -17,7 +16,6 @@ export default function HomePage() {
   const [cursos, setCursos] = useState<Curso[]>([]);
   const [cursosOriginales, setCursosOriginales] = useState<Curso[]>([]);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
-  const [modoPrueba, setModoPrueba] = useState(true);
   const [modoCalculo, setModoCalculo] = useState<ModoCalculo>('ninguno');
 
   // Efecto para recalcular cuando cambia el modo
@@ -50,24 +48,6 @@ export default function HomePage() {
     setCargando(false);
   };
 
-  // Función para login con datos de prueba
-  const handleLoginDemo = async (usuario: string) => {
-    setCargando(true);
-    setError(null);
-    
-    setTimeout(() => {
-      const datosPrueba = generarDatosDePrueba();
-      setCursosOriginales(datosPrueba);
-      setCursos(actualizarCursosConModoCalculo(datosPrueba, modoCalculo));
-      setIsLoggedIn(true);
-      setError(null);
-      setCargando(false);
-      
-      console.log('🎭 Modo demo activado');
-      console.log(`📚 ${datosPrueba.length} cursos de prueba cargados`);
-    }, 1500);
-  };
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError(null);
@@ -77,16 +57,12 @@ export default function HomePage() {
       return;
     }
 
-    if (!modoPrueba && !password.trim()) {
+    if (!password.trim()) {
       setError('Por favor ingresa tu contraseña');
       return;
     }
 
-    if (modoPrueba) {
-      await handleLoginDemo(usuario);
-    } else {
-      await handleLoginReal(usuario, password);
-    }
+    await handleLoginReal(usuario, password);
   };
 
   const handleLogout = () => {
@@ -99,29 +75,14 @@ export default function HomePage() {
     setModoCalculo('ninguno');
   };
 
-  // Toggle entre modo prueba y real
-  const toggleModoPrueba = () => {
-    setModoPrueba(!modoPrueba);
-    setError(null);
-    setPassword('');
-  };
-
-  // Resetear para modo demo
-  const usarModoDemo = () => {
-    setUsuario('2023102302');
-    setPassword('');
-    setModoPrueba(true);
-    setError(null);
-  };
-
   if (isLoggedIn && cursos.length > 0) {
     return (
       <div className="min-h-screen bg-gray-50 p-4 md:p-8">
         <DashboardHeader
           usuario={usuario}
-          modoPrueba={modoPrueba}
+          //modoPrueba={false} 
           cursos={cursos}
-          onToggleModo={toggleModoPrueba}
+          //onToggleModo={() => {}}
           onLogout={handleLogout}
           modoCalculo={modoCalculo}
           onModoCalculoChange={setModoCalculo}
@@ -134,15 +95,11 @@ export default function HomePage() {
   return (
     <div className="min-h-screen bg-gray-50 p-4 md:p-8">
       <LoginForm
-        modoPrueba={modoPrueba}
         cargando={cargando}
         error={error}
         usuario={usuario}
         password={password}
-        onToggleModo={toggleModoPrueba}
-        onUsarModoDemo={usarModoDemo}
         onLoginReal={handleLoginReal}
-        onLoginDemo={handleLoginDemo}
         onUsuarioChange={setUsuario}
         onPasswordChange={setPassword}
       />
