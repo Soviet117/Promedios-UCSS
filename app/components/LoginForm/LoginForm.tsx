@@ -31,23 +31,31 @@ export default function LoginForm({
     <div className="max-w-4xl mx-auto">
       {/* Información importante */}
       <div className="mb-6 md:mb-8 bg-white rounded-xl shadow p-4 md:p-6">
-        <h2 className="text-xl font-bold text-gray-800 mb-3">📋 Información importante</h2>
+        <h2 className="text-xl font-bold text-gray-800 mb-3">Información importante</h2>
         <ul className="space-y-2 text-gray-600">
           <li className="flex items-start">
             <span className="text-green-500 mr-2">✓</span>
-            No debes estar logueado en la intranet UCSS en otro navegador
+            No debes estar logueado en la intranet UCSS en otra pestaña o navegador
           </li>
           <li className="flex items-start">
             <span className="text-green-500 mr-2">✓</span>
-            Puedes calcular tu promedio general automáticamente
+            Este proyecto es Open Source:    {" "}
+             <a 
+              href="https://github.com/Soviet117/Promedios-UCSS.git" 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:text-blue-700 underline"
+            >
+                 _Repositorio en GitHub
+            </a>
           </li>
           <li className="flex items-start">
             <span className="text-green-500 mr-2">✓</span>
-            Se muestran todos los tipos de promedios y evaluaciones
+            Versión: v2.0.1-beta
           </li>
           <li className="flex items-start">
-            <span className="text-yellow-500 mr-2">⚠</span>
-            Tus credenciales se usan solo para acceder a la intranet, no se almacenan
+            <span className="text-green-500 mr-2">✓</span>
+            Tus credenciales no se almacenan, puedes revisar el código.
           </li>
         </ul>
       </div>
@@ -55,7 +63,7 @@ export default function LoginForm({
       {/* Formulario de login */}
       <div className="max-w-md mx-auto bg-white rounded-xl shadow-md p-6">
         <h1 className="text-2xl font-bold text-gray-800 mb-6 text-center">
-          🔐 Login UCSS
+           Login UCSS
         </h1>
         
         {error && (
@@ -66,7 +74,7 @@ export default function LoginForm({
 
         {/* Indicador de modo */}
         <div className="mb-6 p-3 rounded-lg text-center font-medium bg-blue-100 text-blue-800 border border-blue-200">
-          Conectándose a la intranet UCSS - Credenciales reales requeridas
+          Credenciales reales requeridas
         </div>
 
         <LoginFormReal
@@ -78,16 +86,7 @@ export default function LoginForm({
           onSubmit={handleSubmit}
         />
 
-        {/* Instrucciones */}
         <div className="mt-8 text-sm text-gray-600">
-          <h3 className="font-bold mb-2">ℹ️ Cómo funciona:</h3>
-          <ul className="list-disc pl-5 space-y-1">
-            <li>Envía tus credenciales al servidor de forma segura</li>
-            <li>El servidor simula un navegador y se conecta a la intranet UCSS</li>
-            <li>Hace login automático con tu usuario y contraseña</li>
-            <li>Si el login es exitoso, extrae todas tus notas</li>
-            <li>Muestra tus cursos en una interfaz limpia y responsiva</li>
-          </ul>
           <p className="mt-3 text-xs bg-yellow-50 p-2 rounded">
             ⚠️ <strong>Nota:</strong> Esta es una herramienta no oficial para consultar notas de la UCSS.
           </p>

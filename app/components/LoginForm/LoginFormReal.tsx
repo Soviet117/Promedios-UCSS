@@ -58,7 +58,7 @@ export default function LoginFormReal({
             : 'bg-blue-600 hover:bg-blue-700 text-white'
         }`}
       >
-        {cargando ? '🔐 Conectando...' : '🚀 Obtener mis notas'}
+        {cargando ? 'Conectando...' : 'Obtener mis notas'}
       </button>
     </form>
   );
