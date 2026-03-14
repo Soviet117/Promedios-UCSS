@@ -80,9 +80,7 @@ export default function HomePage() {
       <div className="min-h-screen bg-gray-50 p-4 md:p-8">
         <DashboardHeader
           usuario={usuario}
-          //modoPrueba={false} 
           cursos={cursos}
-          //onToggleModo={() => {}}
           onLogout={handleLogout}
           modoCalculo={modoCalculo}
           onModoCalculoChange={setModoCalculo}
@@ -93,16 +91,14 @@ export default function HomePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      <LoginForm
-        cargando={cargando}
-        error={error}
-        usuario={usuario}
-        password={password}
-        onLoginReal={handleLoginReal}
-        onUsuarioChange={setUsuario}
-        onPasswordChange={setPassword}
-      />
-    </div>
+    <LoginForm
+      cargando={cargando}
+      error={error}
+      usuario={usuario}
+      password={password}
+      onLoginReal={handleLoginReal}
+      onUsuarioChange={setUsuario}
+      onPasswordChange={setPassword}
+    />
   );
 }
