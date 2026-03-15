@@ -7,7 +7,6 @@ interface CursoCardProps {
   creditos: number;
   tipo: string;
   docente: string;
-  // Notas principales
   notasPrincipales: {
     EC?: string;
     E1?: string;
@@ -16,11 +15,8 @@ interface CursoCardProps {
     EF?: string;
     PF?: string;
   };
-  // Evaluaciones continuas
   evaluacionesContinuas: Record<string, string>;
-  // Cantidad de EC habilitadas
   cantidadContinuas?: number;
-  // Modo de cálculo
   modoCalculo?: 'ninguno' | 'habilitadas' | 'publicadas';
   className?: string;
 }
@@ -38,12 +34,10 @@ const CursoCard: FC<CursoCardProps> = ({
   className = ''
 }) => {
   
-  // Función para obtener las EC a mostrar según el modo
   const obtenerEvaluacionesMostrar = () => {
     const evaluaciones = [];
     
     if (modoCalculo === 'publicadas') {
-      // Modo publicadas: solo las que tienen valor
       for (let i = 1; i <= cantidadContinuas; i++) {
         const key = `EC${i}`;
         const valor = evaluacionesContinuas[key];
@@ -57,22 +51,19 @@ const CursoCard: FC<CursoCardProps> = ({
         }
       }
     } else {
-      // Modo ninguno o habilitadas: mostrar todas las habilitadas
       for (let i = 1; i <= cantidadContinuas; i++) {
         const key = `EC${i}`;
         const valor = evaluacionesContinuas[key];
         const tieneValor = valor && valor.trim() !== '';
         
         if (modoCalculo === 'habilitadas') {
-          // En modo habilitadas, las vacías se muestran como "0.0" (calculadas)
           evaluaciones.push({
             label: key,
             value: tieneValor ? valor : '0.0',
             isPublicada: tieneValor,
-            esCalculada: !tieneValor // Las vacías son calculadas
+            esCalculada: !tieneValor
           });
         } else {
-          // Modo ninguno: mostrar "--" si están vacías
           evaluaciones.push({
             label: key,
             value: tieneValor ? valor : '--',
@@ -88,80 +79,68 @@ const CursoCard: FC<CursoCardProps> = ({
 
   const evaluacionesMostrar = obtenerEvaluacionesMostrar();
 
-  // Función para determinar el color de una nota
   const obtenerColorNota = (notaStr: string): string => {
     const nota = parseFloat(notaStr);
-    if (isNaN(nota)) return 'text-gray-500';
+    if (isNaN(nota)) return 'text-[#3d6070]';
     
     if (nota < 10.50) {
-      return 'text-red-600 font-bold';
-    } else if (nota >= 17) {
-      return 'text-black';
-    } else if (nota >= 14) {
-      return 'text-black';
-    } else if (nota >= 11) {
-      return 'text-black';
-    }
-    return 'text-gray-800';
+      return 'text-[#f14c4c] font-bold';
+    } else if (nota >= 10.50) {
+      return 'text-[#4ec9b0]';
+    } 
+    return 'text-[#d0eaf4]';
   };
 
-  // Función para determinar si una nota es calculada
   const esNotaCalculada = (valor: string, esCalculada: boolean): boolean => {
-    // Si es "0.0" en modo habilitadas y fue calculada, o si es valor vacío
     return esCalculada || valor === '0.0';
   };
 
-  // Obtener color para nota calculada (gris más claro)
   const obtenerColorCalculada = (): string => {
-    return 'text-gray-400'; // Gris más claro para notas calculadas
+    return 'text-[#3d6070]';
   };
 
-  // Obtener color para EC (depende si es calculada o no)
   const obtenerColorEC = (): string => {
     const ecValor = notasPrincipales?.EC || '';
     if (modoCalculo !== 'ninguno' && ecValor) {
-      // Si estamos en modo cálculo y hay valor de EC, es calculada
-      return 'text-gray-400'; // Gris para EC calculada
+      return 'text-[#3d6070]';
     }
     return obtenerColorNota(ecValor);
   };
 
   return (
-    <div className={`bg-white rounded-lg shadow-md border border-gray-200 p-4 mb-6 ${className}`}>
-      {/* Encabezado del curso */}
-      <div className="mb-4 bg-blue-100 p-3 rounded-lg">
-        <h2 className="text-lg font-bold text-black mb-2">{nombre}</h2>
+    <div className={`bg-[#111820] rounded-lg shadow-md border border-[rgba(0,170,210,0.14)] p-4 mb-6 ${className}`}>
+      <div className="mb-4 bg-[#0b1118] p-3 rounded-lg border border-[rgba(0,170,210,0.14)]">
+        <h2 className="text-lg font-bold text-[#d0eaf4] mb-2">{nombre}</h2>
         <div className="flex flex-wrap gap-4 mb-2 text-sm">
-          <p className="text-black">
-            <span className="font-semibold">CÓD.: </span> {codigo}
+          <p className="text-[#7aa3b4]">
+            <span className="font-semibold text-[#3d6070]">CÓD.: </span> {codigo}
           </p>
-          <p className="text-black">
-            <span className="font-semibold">CRÉD.: </span> {creditos}
+          <p className="text-[#7aa3b4]">
+            <span className="font-semibold text-[#3d6070]">CRÉD.: </span> {creditos}
           </p>
-          <p className="text-black">
-            <span className="font-semibold">TIPO: </span> {tipo}
+          <p className="text-[#7aa3b4]">
+            <span className="font-semibold text-[#3d6070]">TIPO: </span> {tipo}
           </p>
           {cantidadContinuas > 0 && (
-            <p className="text-black">
-              <span className="font-semibold">EC habilitadas: </span> {cantidadContinuas}
+            <p className="text-[#7aa3b4]">
+              <span className="font-semibold text-[#3d6070]">EC habilitadas: </span> {cantidadContinuas}
             </p>
           )}
         </div>
-        <p className="text-black text-sm">
-          <span className="font-semibold">DOCENTE:</span> {docente}
+        <p className="text-[#7aa3b4] text-sm">
+          <span className="font-semibold text-[#3d6070]">DOCENTE:</span> {docente}
         </p>
       </div>
 
-      {/* Indicador de modo activo */}
       {modoCalculo !== 'ninguno' && (
         <div className={`mb-3 p-2 rounded text-xs ${
           modoCalculo === 'habilitadas' 
-            ? 'bg-green-50 text-green-700 border border-green-200' 
-            : 'bg-purple-50 text-purple-700 border border-purple-200'
+            ? 'bg-[rgba(0,170,210,0.05)] text-[#7aa3b4] border border-[rgba(0,170,210,0.14)]' 
+            : 'bg-[rgba(0,170,210,0.05)] text-[#7aa3b4] border border-[rgba(0,170,210,0.14)]'
         }`}>
           {modoCalculo === 'habilitadas' 
-            ? '🧮 Calculado por continuas habilitadas (vacías = 0.0 en gris)' 
-            : '🧮 Calculado por continuas publicadas'}
+            ? 'Calculado por continuas habilitadas (vacías = 0.0 en gris)' 
+            : 'Calculado por continuas publicadas'}
         </div>
       )}
 
@@ -170,33 +149,31 @@ const CursoCard: FC<CursoCardProps> = ({
         <div className="overflow-x-auto">
           <table className="min-w-full border-collapse">
             <thead>
-              <tr className="bg-green-100">
-                <th className="border border-gray-300 py-2 px-2 text-sm text-gray-700">EC [20%]</th>
-                <th className="border border-gray-300 py-2 px-2 text-sm text-gray-700">E1 [10%]</th>
-                <th className="border border-gray-300 py-2 px-2 text-sm text-gray-700">E2 [20%]</th>
-                <th className="border border-gray-300 py-2 px-2 text-sm text-gray-700">E3 [20%]</th>
-                <th className="border border-gray-300 py-2 px-2 text-sm text-gray-700">EF [30%]</th>
-                <th className="border border-gray-300 py-2 px-2 text-sm text-gray-700">PF</th>
+              <tr className="bg-[#0b1118]">
+                <th className="border border-[rgba(0,170,210,0.14)] py-2 px-2 text-sm text-[#7aa3b4]">EC [20%]</th>
+                <th className="border border-[rgba(0,170,210,0.14)] py-2 px-2 text-sm text-[#7aa3b4]">E1 [10%]</th>
+                <th className="border border-[rgba(0,170,210,0.14)] py-2 px-2 text-sm text-[#7aa3b4]">E2 [20%]</th>
+                <th className="border border-[rgba(0,170,210,0.14)] py-2 px-2 text-sm text-[#7aa3b4]">E3 [20%]</th>
+                <th className="border border-[rgba(0,170,210,0.14)] py-2 px-2 text-sm text-[#7aa3b4]">EF [30%]</th>
+                <th className="border border-[rgba(0,170,210,0.14)] py-2 px-2 text-sm text-[#7aa3b4]">PF</th>
               </tr>
             </thead>
             <tbody>
               <tr>
-                {/* EC */}
-                <td className={`border border-gray-300 py-2 px-2 text-sm text-center font-bold ${
+                <td className={`border border-[rgba(0,170,210,0.14)] py-2 px-2 text-sm text-center font-bold ${
                   modoCalculo !== 'ninguno' && notasPrincipales?.EC 
                     ? obtenerColorCalculada() 
                     : obtenerColorEC()
                 }`}>
                   {notasPrincipales?.EC || '--'}
                   {modoCalculo !== 'ninguno' && notasPrincipales?.EC && (
-                    <div className="text-xs text-gray-500">calc</div>
+                    <div className="text-xs text-[#3d6070]">calc</div>
                   )}
                 </td>
                 
-                {/* E1 */}
-                <td className={`border border-gray-300 py-2 px-2 text-sm text-center font-bold ${
+                <td className={`border border-[rgba(0,170,210,0.14)] py-2 px-2 text-sm text-center font-bold ${
                   modoCalculo !== 'ninguno' && !notasPrincipales?.E1
-                    ? 'text-gray-400' // Gris para E1 calculada como 0.0
+                    ? 'text-[#3d6070]'
                     : obtenerColorNota(notasPrincipales?.E1 || '')
                 }`}>
                   {modoCalculo !== 'ninguno' && !notasPrincipales?.E1 
@@ -204,14 +181,13 @@ const CursoCard: FC<CursoCardProps> = ({
                     : (notasPrincipales?.E1 || '--')
                   }
                   {modoCalculo !== 'ninguno' && !notasPrincipales?.E1 && (
-                    <div className="text-xs text-gray-500">calc</div>
+                    <div className="text-xs text-[#3d6070]">calc</div>
                   )}
                 </td>
                 
-                {/* E2 */}
-                <td className={`border border-gray-300 py-2 px-2 text-sm text-center font-bold ${
+                <td className={`border border-[rgba(0,170,210,0.14)] py-2 px-2 text-sm text-center font-bold ${
                   modoCalculo !== 'ninguno' && !notasPrincipales?.E2
-                    ? 'text-gray-400' // Gris para E2 calculada como 0.0
+                    ? 'text-[#3d6070]'
                     : obtenerColorNota(notasPrincipales?.E2 || '')
                 }`}>
                   {modoCalculo !== 'ninguno' && !notasPrincipales?.E2 
@@ -219,14 +195,13 @@ const CursoCard: FC<CursoCardProps> = ({
                     : (notasPrincipales?.E2 || '--')
                   }
                   {modoCalculo !== 'ninguno' && !notasPrincipales?.E2 && (
-                    <div className="text-xs text-gray-500">calc</div>
+                    <div className="text-xs text-[#3d6070]">calc</div>
                   )}
                 </td>
                 
-                {/* E3 */}
-                <td className={`border border-gray-300 py-2 px-2 text-sm text-center font-bold ${
+                <td className={`border border-[rgba(0,170,210,0.14)] py-2 px-2 text-sm text-center font-bold ${
                   modoCalculo !== 'ninguno' && !notasPrincipales?.E3
-                    ? 'text-gray-400' // Gris para E3 calculada como 0.0
+                    ? 'text-[#3d6070]'
                     : obtenerColorNota(notasPrincipales?.E3 || '')
                 }`}>
                   {modoCalculo !== 'ninguno' && !notasPrincipales?.E3 
@@ -234,14 +209,13 @@ const CursoCard: FC<CursoCardProps> = ({
                     : (notasPrincipales?.E3 || '--')
                   }
                   {modoCalculo !== 'ninguno' && !notasPrincipales?.E3 && (
-                    <div className="text-xs text-gray-500">calc</div>
+                    <div className="text-xs text-[#3d6070]">calc</div>
                   )}
                 </td>
                 
-                {/* EF */}
-                <td className={`border border-gray-300 py-2 px-2 text-sm text-center font-bold ${
+                <td className={`border border-[rgba(0,170,210,0.14)] py-2 px-2 text-sm text-center font-bold ${
                   modoCalculo !== 'ninguno' && !notasPrincipales?.EF
-                    ? 'text-gray-400' // Gris para EF calculada como 0.0
+                    ? 'text-[#3d6070]'
                     : obtenerColorNota(notasPrincipales?.EF || '')
                 }`}>
                   {modoCalculo !== 'ninguno' && !notasPrincipales?.EF 
@@ -249,19 +223,18 @@ const CursoCard: FC<CursoCardProps> = ({
                     : (notasPrincipales?.EF || '--')
                   }
                   {modoCalculo !== 'ninguno' && !notasPrincipales?.EF && (
-                    <div className="text-xs text-gray-500">calc</div>
+                    <div className="text-xs text-[#3d6070]">calc</div>
                   )}
                 </td>
                 
-                {/* PF */}
-                <td className={`border border-gray-300 py-2 px-2 text-sm text-center font-bold text-lg bg-gray-50 ${
+                <td className={`border border-[rgba(0,170,210,0.14)] py-2 px-2 text-sm text-center font-bold text-lg bg-[#0b1118] ${
                   modoCalculo !== 'ninguno' && notasPrincipales?.PF
-                    ? 'text-gray-400' // Gris para PF calculado
+                    ? 'text-[#3d6070]'
                     : obtenerColorNota(notasPrincipales?.PF || '')
                 }`}>
                   {notasPrincipales?.PF || '--'}
                   {modoCalculo !== 'ninguno' && notasPrincipales?.PF && (
-                    <div className="text-xs text-gray-500">calc</div>
+                    <div className="text-xs text-[#3d6070]">calc</div>
                   )}
                 </td>
               </tr>
@@ -276,16 +249,16 @@ const CursoCard: FC<CursoCardProps> = ({
           <div className="overflow-x-auto">
             <table className="min-w-full border-collapse">
               <thead>
-                <tr className="bg-blue-100">
+                <tr className="bg-[#0b1118]">
                   {evaluacionesMostrar.map((ec) => (
                     <th 
                       key={`header-${ec.label}`}
-                      className={`border border-gray-300 py-2 px-2 text-sm font-semibold ${
-                        ec.esCalculada ? 'text-gray-400' : 'text-gray-700'
+                      className={`border border-[rgba(0,170,210,0.14)] py-2 px-2 text-sm font-semibold ${
+                        ec.esCalculada ? 'text-[#3d6070]' : 'text-[#7aa3b4]'
                       }`}
                     >
                       {ec.label}
-                      {ec.esCalculada && <span className="text-xs text-gray-500 block">calc</span>}
+                      {ec.esCalculada && <span className="text-xs text-[#3d6070] block">calc</span>}
                     </th>
                   ))}
                 </tr>
@@ -295,20 +268,20 @@ const CursoCard: FC<CursoCardProps> = ({
                   {evaluacionesMostrar.map((ec) => (
                     <td 
                       key={`value-${ec.label}`}
-                      className={`border border-gray-300 py-2 px-2 text-sm text-center font-bold ${
-                        ec.esCalculada ? 'text-gray-400 bg-gray-50' :
+                      className={`border border-[rgba(0,170,210,0.14)] py-2 px-2 text-sm text-center font-bold ${
+                        ec.esCalculada ? 'text-[#3d6070] bg-[#0b1118]' :
                         obtenerColorNota(ec.value)
                       }`}
                     >
                       {ec.value}
-                      {ec.esCalculada && <div className="text-xs text-gray-500">calc</div>}
+                      {ec.esCalculada && <div className="text-xs text-[#3d6070]">calc</div>}
                     </td>
                   ))}
                 </tr>
               </tbody>
             </table>
           </div>
-          <p className="text-xs text-gray-500 mt-1 italic">
+          <p className="text-xs text-[#3d6070] mt-1 italic">
             {modoCalculo === 'ninguno' && (
               <>
                 {cantidadContinuas} EC habilitadas • {

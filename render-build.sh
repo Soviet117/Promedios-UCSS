@@ -2,7 +2,6 @@
 echo "🔄 Iniciando build para Render..."
 rm -rf .next node_modules package-lock.json
 
-# Instalar dependencias del sistema para Chromium (crítico)
 echo "🔧 Instalando dependencias del sistema..."
 apt-get update && apt-get install -y \
   wget \
@@ -44,7 +43,6 @@ apt-get update && apt-get install -y \
   xdg-utils \
   --no-install-recommends
 
-# Instalar dependencias de Node
 npm install
 npm run build
 echo "✅ Build completado exitosamente!"
