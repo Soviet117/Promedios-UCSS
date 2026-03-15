@@ -11,7 +11,7 @@ export default function CursosGrid({ cursos, modoCalculo }: CursosGridProps) {
   if (cursos.length === 0) {
     return (
       <div className="text-center py-12">
-        <div className="text-gray-400 text-6xl mb-4">📚</div>
+        <div className="text-gray-400 text-6xl mb-4"></div>
         <h3 className="text-xl font-semibold text-gray-600 mb-2">
           No se encontraron cursos
         </h3>
