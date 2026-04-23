@@ -151,13 +151,22 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
             
             // Extraemos el nombre del curso
             let nombreCompleto = '';
-            const nombreSelectors = ['b', 'strong', 'h3', 'h4', '.nombre-curso', '.curso-nombre'];
-            for (const nombreSelector of nombreSelectors) {
-              const nombreElement = curso.find(nombreSelector).first();
-              if (nombreElement.text().trim()) {
-                nombreCompleto = nombreElement.text().trim();
-                break;
+            const parrafos = curso.find('.css-curso-card-body > p');
+            parrafos.each((i, elem) => {
+              const texto = $(elem).text().trim();
+              if (!texto.toLowerCase().includes('semestre:')) {
+                nombreCompleto = texto;
+                return false;
               }
+            });
+
+            if (!nombreCompleto) {
+              parrafos.each((i, elem) => {
+                const texto = $(elem).text().trim();
+                if (texto && !texto.toLowerCase().includes('semestre:')) {
+                  nombreCompleto = texto;
+                }
+              });
             }
             
             // Extraemos información del curso (código, créditos, tipo)
