@@ -1,5 +1,6 @@
 'use client';
 import LoginFormReal from './LoginFormReal';
+import { useState, useEffect } from 'react';
 
 interface LoginFormProps {
   cargando: boolean;
@@ -11,6 +12,21 @@ interface LoginFormProps {
   onPasswordChange: (password: string) => void;
 }
 
+// Función para detectar si es un dispositivo móvil
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const userAgent = navigator.userAgent || navigator.vendor || (window as any).opera;
+      const mobileRegex = /android|ipad|iphone|ipod|iemobile|wpdesktop/i;
+      setIsMobile(mobileRegex.test(userAgent));
+    }
+  }, []);
+  return isMobile;
+}
+
+
 export default function LoginForm({
   cargando,
   error,
@@ -21,6 +37,25 @@ export default function LoginForm({
   onPasswordChange,
 }: LoginFormProps) {
 
+  const isMobile = useIsMobile();
+
+  const handleEmailLinkClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+
+    const email = 'adixontisg31@gmail.com';
+    const subject = 'PROMEDIOS UCSS | Sugerencias o Criticas Constructivas';
+
+    let url = '';
+
+    if (isMobile) {
+      url = `mailto:${email}?subject=${encodeURIComponent(subject)}`;
+    } else {
+      url = `https://mail.google.com/mail/?view=cm&fs=1&to=${email}&su=${encodeURIComponent(subject)}`;
+    }
+
+    window.open(url, '_blank', 'noopener,noreferrer');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     await onLoginReal(usuario, password);
@@ -28,6 +63,7 @@ export default function LoginForm({
 
   return (
     <div className="lf-wrap">
+      <h1 className="lf-main-title">Sumar dividir promediar... ¿aburrido? Nos encargamos</h1>
       <div className="lf-grid">
 
         {/* LEFT: Info */}
@@ -77,9 +113,30 @@ export default function LoginForm({
                 </svg>
               </span>
               <span>
-                Versión actual: <span className="lf-mono">v2.0.1-beta</span>
+                Si tienes sugerencias o críticas constructivas {' '}
+                <a
+                  href="#"
+                  onClick={handleEmailLinkClick}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="lf-link"
+                >
+                  adixontisg31@gmail.com
+                </a>
               </span>
             </li>
+
+            <li className="lf-info-item">
+              <span className="lf-info-bullet">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                  <polyline points="20 6 9 17 4 12"/>
+                </svg>
+              </span>
+              <span>
+                Versión actual: <span className="lf-mono">v1.2</span>
+              </span>
+            </li>
+
           </ul>
 
           <div className="lf-warn">

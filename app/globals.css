@@ -315,3 +315,68 @@ body {
   border-top: 1px solid var(--border);
   margin: 16px 0;
 }
+
+.lf-progress-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.lf-progress-text {
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--accent);
+  letter-spacing: 0.02em;
+  text-align: center;
+  position: relative;
+}
+
+.lf-progress-text::after {
+  content: '';
+  animation: dots 1.2s infinite step-end;
+}
+
+@keyframes dots {
+  0%, 20% { content: ''; }
+  21%, 40% { content: '.'; }
+  41%, 60% { content: '..'; }
+  61%, 80% { content: '...'; }
+  81%, 100% { content: ''; }
+}
+
+.lf-progress-bar-track {
+  width: 100%;
+  height: 6px;
+  background: var(--surface);
+  border-radius: 3px;
+  overflow: hidden;
+  border: 1px solid var(--border);
+}
+
+.lf-progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--accent), #0088a8);
+  border-radius: 2px;
+  width: 0%;
+  animation: loading 2.5s ease-in-out infinite alternate;
+}
+
+@keyframes loading {
+  0% { width: 0%; }
+  100% { width: 100%; }
+}
+
+.lf-main-title {
+  text-align: center;
+  font-size: 1.6rem;
+  font-weight: 500;
+  color: #ffffff;
+  margin-bottom: 1.5rem;
+  letter-spacing: 0.01em;
+}
+
+.lf-wrap {
+  flex-direction: column;
+}

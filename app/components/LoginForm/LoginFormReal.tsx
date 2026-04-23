@@ -49,17 +49,26 @@ export default function LoginFormReal({
         />
       </div>
 
-      <button
-        type="submit"
-        disabled={cargando}
-        className={`w-full py-3 px-4 rounded-lg font-medium transition ${
-          cargando
-            ? 'bg-gray-400 cursor-not-allowed'
-            : 'bg-blue-600 hover:bg-blue-700 text-white'
-        }`}
-      >
-        {cargando ? 'Conectando...' : 'Obtener mis notas'}
-      </button>
+      {cargando ? (
+        <div className="lf-progress-container">
+          <div className="lf-progress-text">Procesando solicitud</div>
+          <div className="lf-progress-bar-track">
+            <div className="lf-progress-bar-fill"></div>
+          </div>
+        </div>
+      ) : (
+        <button
+          type="submit"
+          disabled={cargando}
+          className={`w-full py-3 px-4 rounded-lg font-medium transition ${
+            cargando
+              ? 'bg-gray-400 cursor-not-allowed'
+              : 'bg-blue-600 hover:bg-blue-700 text-white'
+          }`}
+        >
+          Obtener mis notas
+        </button>
+      )}
     </form>
   );
 }
