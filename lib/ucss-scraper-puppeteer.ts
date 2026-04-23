@@ -9,7 +9,7 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
   let lastError: Error | null = null;
   
   for (let attempt = 1; attempt <= MAX_RETRIES; attempt++) {
-    console.log(`🔄 Intento ${attempt} de ${MAX_RETRIES} para usuario: ${usuario}`);
+    console.log(`Intento ${attempt} de ${MAX_RETRIES} para usuario: ${usuario}`);
     
     let browser: Browser | null = null;
     
@@ -47,16 +47,16 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
       
       const baseURL = 'https://intranet.ucss.edu.pe/ucss-intranet';
       
-      console.log(`🌐 Intento ${attempt}: Navegando a la intranet...`);
+      console.log(`Intento ${attempt}: Navegando a la intranet...`);
       
       try {
         await page.goto(`${baseURL}/login/ingresar.aspx`, {
           waitUntil: 'networkidle0',
           timeout: 45000
         });
-        console.log(`✅ Intento ${attempt}: Navegación exitosa`);
+        console.log(`Intento ${attempt}: Navegación exitosa`);
       } catch (navError: any) {
-        console.log(`⚠️  Intento ${attempt}: Error de navegación: ${navError.message}`);
+        console.log(`Intento ${attempt}: Error de navegación: ${navError.message}`);
 
         await page.goto(`${baseURL}/login/ingresar.aspx`, {
           waitUntil: 'domcontentloaded',
@@ -93,7 +93,7 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
         await page.type('input[type="password"]', password);
       }
       
-      console.log(`🔑 Intento ${attempt}: Enviando credenciales...`);
+      console.log(`Intento ${attempt}: Enviando credenciales...`);
       
       // Click
       await Promise.all([
@@ -102,7 +102,7 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
         page.click('input[name="btnIngresar"], input[type="submit"], button[type="submit"]')
           .catch(() => page.keyboard.press('Enter'))
       ]).catch(() => {
-        console.log('⚠️  Navegación no detectada, continuando...');
+        console.log('Navegación no detectada, continuando...');
       });
       
       await new Promise(resolve => setTimeout(resolve, 3000));
@@ -114,9 +114,9 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
         throw new Error('Credenciales incorrectas');
       }
       
-      console.log(`✅ Intento ${attempt}: Login exitoso detectado.`);
+      console.log(`Intento ${attempt}: Login exitoso detectado.`);
       
-      console.log(`📚 Intento ${attempt}: Navegando a notas...`);
+      console.log(`Intento ${attempt}: Navegando a notas...`);
       await page.goto(`${baseURL}/academico/notas.aspx`, {
         waitUntil: 'networkidle0',
         timeout: 45000
@@ -144,7 +144,7 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
       for (const selector of cursoSelectors) {
         const cursos = $(selector);
         if (cursos.length > 0) {
-          console.log(`✅ Encontrados ${cursos.length} cursos con selector: ${selector}`);
+          console.log(`Encontrados ${cursos.length} cursos con selector: ${selector}`);
           
           cursos.each((index, element) => {
             const curso = $(element);
@@ -262,7 +262,7 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
       }
       
       if (cursosExtraidos.length === 0) {
-        console.log('⚠️  No se encontraron cursos con los selectores usuales, intentando extracción manual...');
+        console.log('No se encontraron cursos con los selectores usuales, intentando extracción manual...');
         const allText = $('body').text();
         if (allText.includes('notas') || allText.includes('curso') || allText.includes('materia')) {
           // Si no se encuentra un curso se carga uno genérico como fallback
@@ -281,9 +281,9 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
         }
       }
       
-      console.log(`✅ Intento ${attempt}: ${cursosExtraidos.length} cursos extraídos.`);
+      console.log(`Intento ${attempt}: ${cursosExtraidos.length} cursos extraídos.`);
       await browser.close();
-      console.log(`✅ Intento ${attempt}: Navegador cerrado.`);
+      console.log(`Intento ${attempt}: Navegador cerrado.`);
       
       return {
         success: true,
@@ -295,19 +295,19 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
       };
       
     } catch (error: any) {
-      console.error(`❌ Intento ${attempt} fallido:`, error.message);
+      console.error(`Intento ${attempt} fallido:`, error.message);
       lastError = error;
       
       if (browser) {
         try {
           await browser.close();
         } catch (closeError) {
-          console.log(`⚠️  Error cerrando navegador:`, closeError);
+          console.log(`Error cerrando navegador:`, closeError);
         }
       }
       
       if (attempt === MAX_RETRIES) {
-        console.error(`💥 Todos los ${MAX_RETRIES} intentos fallaron`);
+        console.error(`Todos los ${MAX_RETRIES} intentos fallaron`);
         break;
       }
       
@@ -316,7 +316,7 @@ export async function obtenerNotasDesdeUCSS(usuario: string, password: string) {
       }
       
       const delay = RETRY_DELAY * Math.pow(1.5, attempt - 1);
-      console.log(`⏳ Esperando ${delay}ms antes del siguiente intento...`);
+      console.log(`Esperando ${delay}ms antes del siguiente intento...`);
       await new Promise(resolve => setTimeout(resolve, delay));
     }
   }
