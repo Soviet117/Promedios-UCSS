@@ -72,7 +72,7 @@ export default function LoginFormReal({
           </div>
           {mostrarAdvertencia && (
             <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200 mt-2 text-left">
-              <span className="font-semibold block mb-1">⚠️ Aviso (hosting gratuito):</span>
+              <span className="font-semibold block mb-1">Aviso (hosting gratuito):</span>
               El servidor puede estar &quot;despertando&quot; y tomar unos segundos extra. <strong>Si demora demasiado, por favor recarga la página.</strong>
             </div>
           )}
@@ -81,11 +81,10 @@ export default function LoginFormReal({
         <button
           type="submit"
           disabled={cargando}
-          className={`w-full py-3 px-4 rounded-lg font-medium transition ${
-            cargando
+          className={`w-full py-3 px-4 rounded-lg font-medium transition ${cargando
               ? 'bg-gray-400 cursor-not-allowed'
               : 'bg-blue-600 hover:bg-blue-700 text-white'
-          }`}
+            }`}
         >
           Obtener mis notas
         </button>

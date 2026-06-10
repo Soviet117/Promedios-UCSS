@@ -71,7 +71,7 @@ export default function LoginForm({
           <div className="lf-info-header">
             <div className="lf-info-header-icon">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"/><line x1="12" y1="16" x2="12" y2="12"/><line x1="12" y1="8" x2="12.01" y2="8"/>
+                <circle cx="12" cy="12" r="10" /><line x1="12" y1="16" x2="12" y2="12" /><line x1="12" y1="8" x2="12.01" y2="8" />
               </svg>
             </div>
             <span className="lf-info-title">Antes de ingresar</span>
@@ -81,7 +81,7 @@ export default function LoginForm({
             <li className="lf-info-item">
               <span className="lf-info-bullet">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12"/>
+                  <polyline points="20 6 9 17 4 12" />
                 </svg>
               </span>
               <span>Cierra sesión en la intranet UCSS antes de continuar</span>
@@ -90,7 +90,7 @@ export default function LoginForm({
             <li className="lf-info-item">
               <span className="lf-info-bullet">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12"/>
+                  <polyline points="20 6 9 17 4 12" />
                 </svg>
               </span>
               <span>
@@ -109,7 +109,7 @@ export default function LoginForm({
             <li className="lf-info-item">
               <span className="lf-info-bullet">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12"/>
+                  <polyline points="20 6 9 17 4 12" />
                 </svg>
               </span>
               <span>
@@ -129,11 +129,11 @@ export default function LoginForm({
             <li className="lf-info-item">
               <span className="lf-info-bullet">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
-                  <polyline points="20 6 9 17 4 12"/>
+                  <polyline points="20 6 9 17 4 12" />
                 </svg>
               </span>
               <span>
-                Versión actual: <span className="lf-mono">v1.2</span>
+                Versión actual: <span className="lf-mono">v1.3</span>
               </span>
             </li>
 
@@ -153,8 +153,8 @@ export default function LoginForm({
           <div className="lf-form-header">
             <div className="lf-form-icon">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+                <rect x="3" y="11" width="18" height="11" rx="2" ry="2" />
+                <path d="M7 11V7a5 5 0 0 1 10 0v4" />
               </svg>
             </div>
             <div>
@@ -166,7 +166,7 @@ export default function LoginForm({
           {error && (
             <div className="lf-error">
               <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
+                <circle cx="12" cy="12" r="10" /><line x1="12" y1="8" x2="12" y2="12" /><line x1="12" y1="16" x2="12.01" y2="16" />
               </svg>
               <span>{error}</span>
             </div>
