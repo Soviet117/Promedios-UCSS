@@ -63,7 +63,7 @@ export default function LoginForm({
 
   return (
     <div className="lf-wrap">
-      <h1 className="lf-main-title">Sumar dividir promediar... ¿aburrido? Nos encargamos</h1>
+      <h1 className="lf-main-title">Calcula tus promedios con un solo click</h1>
       <div className="lf-grid">
 
         {/* LEFT: Info */}

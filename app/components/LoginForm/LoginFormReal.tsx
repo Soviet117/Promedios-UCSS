@@ -1,5 +1,7 @@
 'use client';
 
+import { useState, useEffect } from 'react';
+
 interface LoginFormRealProps {
   cargando: boolean;
   usuario: string;
@@ -17,6 +19,19 @@ export default function LoginFormReal({
   onPasswordChange,
   onSubmit
 }: LoginFormRealProps) {
+  const [mostrarAdvertencia, setMostrarAdvertencia] = useState(false);
+
+  useEffect(() => {
+    let timer: NodeJS.Timeout;
+    if (cargando) {
+      timer = setTimeout(() => {
+        setMostrarAdvertencia(true);
+      }, 15000);
+    } else {
+      setMostrarAdvertencia(false);
+    }
+    return () => clearTimeout(timer);
+  }, [cargando]);
   return (
     <form onSubmit={onSubmit} className="space-y-4">
       <div>
@@ -50,11 +65,17 @@ export default function LoginFormReal({
       </div>
 
       {cargando ? (
-        <div className="lf-progress-container">
+        <div className="lf-progress-container flex flex-col gap-3">
           <div className="lf-progress-text">Procesando solicitud</div>
           <div className="lf-progress-bar-track">
             <div className="lf-progress-bar-fill"></div>
           </div>
+          {mostrarAdvertencia && (
+            <div className="text-sm text-amber-600 bg-amber-50 p-3 rounded-md border border-amber-200 mt-2 text-left">
+              <span className="font-semibold block mb-1">⚠️ Aviso (hosting gratuito):</span>
+              El servidor puede estar &quot;despertando&quot; y tomar unos segundos extra. <strong>Si demora demasiado, por favor recarga la página.</strong>
+            </div>
+          )}
         </div>
       ) : (
         <button
